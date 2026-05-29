@@ -51,6 +51,10 @@ export default async function AdminPage() {
               <Download className="h-4 w-4" />
               Export CSV
             </a>
+            <Link className="btn-secondary border-white/20 bg-white/10 text-white hover:bg-white hover:text-navy-900" href="/admin/manage">
+              <Users className="h-4 w-4" />
+              Kelola Admin
+            </Link>
             <form action={logoutAction}>
               <button className="btn-secondary border-white/20 bg-white/10 text-white hover:bg-white hover:text-navy-900" type="submit">
                 <LogOut className="h-4 w-4" />

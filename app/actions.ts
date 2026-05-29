@@ -31,16 +31,29 @@ export async function checkProductAction(
 }
 
 export async function loginAction(_prevState: FormState, formData: FormData): Promise<FormState> {
+  const username = String(formData.get("username") || "");
   const password = String(formData.get("password") || "");
-  const success = loginAdmin(password);
 
-  if (!success) {
+  if (!username.trim() || !password.trim()) {
     return {
       ok: false,
-      message: "Password admin salah"
+      message: "Username dan password wajib diisi"
     };
   }
 
+  const admin = await (async () => {
+    const { verifyAdminPassword } = await import("@/lib/auth");
+    return await verifyAdminPassword(username, password);
+  })();
+
+  if (!admin) {
+    return {
+      ok: false,
+      message: "Username atau password salah"
+    };
+  }
+
+  loginAdmin(admin.id);
   redirect("/admin");
 }
 

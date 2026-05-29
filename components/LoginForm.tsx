@@ -24,8 +24,13 @@ export function LoginForm() {
       </div>
 
       <label className="block">
-        <span className="label">Password Admin</span>
-        <input className="field mt-2" name="password" placeholder="Masukkan password" type="password" />
+        <span className="label">Username</span>
+        <input className="field mt-2" name="username" placeholder="Masukkan username" required />
+      </label>
+
+      <label className="block mt-4">
+        <span className="label">Password</span>
+        <input className="field mt-2" name="password" placeholder="Masukkan password" type="password" required />
       </label>
 
       {state.message ? <p className="mt-3 text-sm font-semibold text-red-600">{state.message}</p> : null}
