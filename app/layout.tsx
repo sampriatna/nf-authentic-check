@@ -12,8 +12,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id">
-      <body>{children}</body>
+    <html lang="id" className="scroll-smooth">
+      <body className="min-h-screen bg-gradient-to-b from-sky-50 to-blue-50 text-navy-900">
+        {children}
+      </body>
     </html>
   );
 }
