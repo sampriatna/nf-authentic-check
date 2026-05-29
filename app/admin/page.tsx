@@ -1,18 +1,12 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { Download, Eye, Fish, LogOut, MapPin, ShieldAlert, ShieldCheck, Store, TrendingUp, Users } from "lucide-react";
 import { logoutAction } from "@/app/actions";
 import { AddProductForm, ImportCsvForm } from "@/components/AdminForms";
 import { SuspiciousProductActions } from "@/components/SuspiciousProductActions";
-import { isAdminLoggedIn } from "@/lib/auth";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { getDashboardStats, getLeadsDashboardStats } from "@/lib/products";
 
 export default async function AdminPage() {
-  const isLoggedIn = isAdminLoggedIn();
-  if (!isLoggedIn) {
-    redirect("/admin/login");
-  }
 
   let dashboardData: any = null;
   let leadsStats: any = null;
