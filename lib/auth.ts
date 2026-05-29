@@ -2,12 +2,12 @@ import { cookies } from "next/headers";
 
 const cookieName = "nf_admin_session";
 
-// Admin password - hardcoded for now, can use environment variable
-const ADMIN_PASSWORD = "@Tukgumer123";
+// Admin password - hardcoded for testing
+const ADMIN_PASSWORD = "tukgumer123";
 
 function getAdminPassword() {
   // Use hardcoded password or env var if available
-  return process.env.ADMIN_PASSWORD || ADMIN_PASSWORD;
+  return (process.env.ADMIN_PASSWORD || ADMIN_PASSWORD).toLowerCase().trim();
 }
 
 export function isAdminLoggedIn() {
@@ -15,8 +15,8 @@ export function isAdminLoggedIn() {
 }
 
 export function loginAdmin(password: string) {
-  const inputPassword = password.trim();
-  const correctPassword = getAdminPassword().trim();
+  const inputPassword = password.toLowerCase().trim();
+  const correctPassword = getAdminPassword();
   
   if (inputPassword !== correctPassword) return false;
 
