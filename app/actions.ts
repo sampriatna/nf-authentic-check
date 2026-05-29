@@ -4,8 +4,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { loginAdmin, logoutAdmin } from "@/lib/auth";
 import { generateAuthenticatorCodes, normalizePrefix } from "@/lib/authenticator";
-import { createProduct, importProducts, verifyProduct } from "@/lib/products";
-import { CheckResult, ProductInput } from "@/lib/types";
+import { createProduct, importProducts, saveCustomerLead, verifyProduct } from "@/lib/products";
+import { CheckResult, CustomerLeadInput, ProductInput } from "@/lib/types";
 
 export type FormState = {
   ok: boolean;
@@ -207,4 +207,46 @@ function splitCsvLine(line: string) {
 
   values.push(current.trim());
   return values;
+}
+
+export async function saveCustomerLeadAction(
+  _prevState: FormState,
+  formData: FormData
+): Promise<FormState> {
+  const input: CustomerLeadInput = {
+    product_code: String(formData.get("product_code") || "").trim(),
+    product_name: String(formData.get("product_name") || "").trim(),
+    batch_code: String(formData.get("batch_code") || "").trim(),
+    customer_name: String(formData.get("customer_name") || "").trim(),
+    whatsapp: String(formData.get("whatsapp") || "").trim(),
+    city: String(formData.get("city") || "").trim(),
+    target_fish: String(formData.get("target_fish") || "").trim()
+  };
+
+  if (!input.customer_name || !input.whatsapp || !input.city || !input.target_fish) {
+    return {
+      ok: false,
+      message: "Semua field wajib diisi"
+    };
+  }
+
+  if (!input.whatsapp.match(/^[0-9]{10,15}$/)) {
+    return {
+      ok: false,
+      message: "Nomor WhatsApp tidak valid (10-15 digit angka)"
+    };
+  }
+
+  try {
+    await saveCustomerLead(input);
+    return {
+      ok: true,
+      message: "Data berhasil disimpan! Anda berhak mendapatkan Ebook Racikan Umpan Update Gratis Seumur Hidup."
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "Gagal menyimpan data"
+    };
+  }
 }

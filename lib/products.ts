@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { Product, ProductInput } from "./types";
+import { CustomerLead, CustomerLeadInput, LeadsDashboardStats, Product, ProductInput } from "./types";
 import { getSupabaseAdmin } from "./supabase";
 
 function getRequestMeta() {
@@ -142,5 +142,103 @@ export async function getDashboardStats() {
     suspiciousCount: suspicious.length,
     suspicious,
     products
+  };
+}
+
+export async function saveCustomerLead(input: CustomerLeadInput): Promise<CustomerLead> {
+  const supabase = getSupabaseAdmin();
+  const now = new Date().toISOString();
+
+  const payload = {
+    product_code: input.product_code.trim(),
+    product_name: input.product_name.trim(),
+    batch_code: input.batch_code.trim(),
+    customer_name: input.customer_name.trim(),
+    whatsapp: input.whatsapp.trim(),
+    city: input.city.trim(),
+    target_fish: input.target_fish.trim(),
+    scanned_at: now,
+    created_at: now
+  };
+
+  const { data, error } = await supabase
+    .from("customer_leads")
+    .insert(payload)
+    .select("*")
+    .single<CustomerLead>();
+
+  if (error) throw error;
+  return data;
+}
+
+export async function getLeadsDashboardStats(): Promise<LeadsDashboardStats> {
+  const supabase = getSupabaseAdmin();
+
+  const now = new Date();
+  const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+
+  // Get all customer leads
+  const { data: leads, error: leadsError } = await supabase
+    .from("customer_leads")
+    .select("*");
+
+  if (leadsError) throw leadsError;
+
+  const allLeads = (leads || []) as CustomerLead[];
+
+  // Get authenticator codes for scan counts
+  const { data: codes, error: codesError } = await supabase
+    .from("authenticator_codes")
+    .select("product_name, scan_count, last_scanned_at");
+
+  if (codesError) throw codesError;
+
+  const allCodes = codes || [];
+
+  // Calculate scans today and this month from authenticator codes
+  const scansToday = allCodes.filter(
+    (code) => code.last_scanned_at && new Date(code.last_scanned_at) >= new Date(startOfDay)
+  ).reduce((sum, code) => sum + (code.scan_count || 0), 0);
+
+  const scansThisMonth = allCodes.filter(
+    (code) => code.last_scanned_at && new Date(code.last_scanned_at) >= new Date(startOfMonth)
+  ).reduce((sum, code) => sum + (code.scan_count || 0), 0);
+
+  // Find top product by scan count
+  const productScans: Record<string, number> = {};
+  for (const code of allCodes) {
+    if (code.product_name && code.scan_count > 0) {
+      productScans[code.product_name] = (productScans[code.product_name] || 0) + code.scan_count;
+    }
+  }
+  const topProduct = Object.entries(productScans)
+    .sort((a, b) => b[1] - a[1])[0]?.[0] || null;
+
+  // Find top city from leads
+  const cityCounts: Record<string, number> = {};
+  for (const lead of allLeads) {
+    if (lead.city) {
+      cityCounts[lead.city] = (cityCounts[lead.city] || 0) + 1;
+    }
+  }
+  const topCity = Object.entries(cityCounts)
+    .sort((a, b) => b[1] - a[1])[0]?.[0] || null;
+
+  // Count by target fish
+  const resellerCount = allLeads.filter((lead) => lead.target_fish === "Reseller").length;
+  const tokoPancingCount = allLeads.filter((lead) => lead.target_fish === "Toko Pancing").length;
+  const pemancingMasCount = allLeads.filter((lead) => lead.target_fish === "Ikan Mas").length;
+  const pemancingLeleCount = allLeads.filter((lead) => lead.target_fish === "Lele").length;
+
+  return {
+    scansToday,
+    scansThisMonth,
+    topProduct,
+    topCity,
+    resellerCount,
+    tokoPancingCount,
+    pemancingMasCount,
+    pemancingLeleCount
   };
 }

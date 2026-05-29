@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AlertTriangle, BadgeCheck, MessageCircle, ShieldCheck } from "lucide-react";
 import { checkAuthenticatorCode } from "@/lib/authenticator";
 import { formatDateTime } from "@/lib/format";
+import { EbookClaimForm } from "@/components/EbookClaimForm";
 
 const adminWhatsapp = process.env.NEXT_PUBLIC_ADMIN_WHATSAPP || "6281234567890";
 
@@ -66,6 +67,14 @@ export default async function PublicCodeCheckPage({ params }: PageProps) {
                   <Detail label="Jumlah Scan" value={`${result.code.scan_count} kali`} />
                   <Detail label="Scan Terakhir" value={formatDateTime(result.code.last_scanned_at)} />
                 </div>
+
+                {!isRepeat && (
+                  <EbookClaimForm
+                    productCode={result.code.unique_code}
+                    productName={result.code.product_name}
+                    batchCode={result.code.batch}
+                  />
+                )}
               </>
             ) : (
               <>

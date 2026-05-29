@@ -85,3 +85,37 @@ export type AuthenticatorCheckResult =
       message: string;
       code: null;
     };
+
+export type CustomerLead = {
+  id: string;
+  product_code: string;
+  product_name: string;
+  batch_code: string;
+  customer_name: string;
+  whatsapp: string;
+  city: string;
+  target_fish: string;
+  scanned_at: string;
+  created_at: string;
+};
+
+export type CustomerLeadInput = {
+  product_code: string;
+  product_name: string;
+  batch_code: string;
+  customer_name: string;
+  whatsapp: string;
+  city: string;
+  target_fish: string;
+};
+
+export type LeadsDashboardStats = {
+  scansToday: number;
+  scansThisMonth: number;
+  topProduct: string | null;
+  topCity: string | null;
+  resellerCount: number;
+  tokoPancingCount: number;
+  pemancingMasCount: number;
+  pemancingLeleCount: number;
+};
