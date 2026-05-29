@@ -69,11 +69,13 @@ export default async function PublicCodeCheckPage({ params }: PageProps) {
                 </div>
 
                 {!isRepeat && (
-                  <EbookClaimForm
-                    productCode={result.code.unique_code}
-                    productName={result.code.product_name}
-                    batchCode={result.code.batch}
-                  />
+                  <div className="mt-8 border-t border-navy-100 pt-8">
+                    <EbookClaimForm
+                      productCode={result.code.unique_code}
+                      productName={result.code.product_name}
+                      batchCode={result.code.batch}
+                    />
+                  </div>
                 )}
               </>
             ) : (
