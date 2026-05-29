@@ -10,8 +10,19 @@ import { getDashboardStats, getLeadsDashboardStats } from "@/lib/products";
 export default async function AdminPage() {
   if (!isAdminLoggedIn()) redirect("/admin/login");
 
-  const { products, suspicious, suspiciousCount, totalProducts, totalScans } = await getDashboardStats();
-  const leadsStats = await getLeadsDashboardStats();
+  let dashboardData: any = null;
+  let leadsStats: any = null;
+  let error: string | null = null;
+
+  try {
+    dashboardData = await getDashboardStats();
+    leadsStats = await getLeadsDashboardStats();
+  } catch (err) {
+    error = err instanceof Error ? err.message : "Error loading dashboard data";
+    console.error("[v0] Dashboard error:", error);
+  }
+
+  const { products = [], suspicious = [], suspiciousCount = 0, totalProducts = 0, totalScans = 0 } = dashboardData || {};
 
   return (
     <main className="min-h-screen">
@@ -50,11 +61,83 @@ export default async function AdminPage() {
       </header>
 
       <section className="mx-auto max-w-7xl px-5 py-7 md:px-8">
+        {error && (
+          <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
+            <p className="text-sm text-red-800">
+              <strong>Konfigurasi Supabase diperlukan:</strong> {error}
+            </p>
+          </div>
+        )}
+
         <div className="grid gap-4 md:grid-cols-3">
           <Stat label="Total Serial" value={totalProducts} />
           <Stat label="Total Scan" value={totalScans} />
           <Stat label="Kode Mencurigakan" value={suspiciousCount} />
         </div>
+
+        {leadsStats && (
+          <div className="panel mt-6 overflow-hidden">
+            <div className="flex items-center justify-between border-b border-navy-100 p-5">
+              <div>
+                <h2 className="text-lg font-black text-navy-900">Statistik Customer Leads</h2>
+                <p className="text-sm text-slate-500">Data dari form klaim ebook produk terverifikasi.</p>
+              </div>
+              <TrendingUp className="h-6 w-6 text-gold-600" />
+            </div>
+            <div className="grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-4">
+              <StatCard 
+                icon={<TrendingUp className="h-5 w-5 text-emerald-600" />}
+                label="Scan Hari Ini" 
+                value={leadsStats.scansToday} 
+                color="emerald"
+              />
+              <StatCard 
+                icon={<TrendingUp className="h-5 w-5 text-blue-600" />}
+                label="Scan Bulan Ini" 
+                value={leadsStats.scansThisMonth} 
+                color="blue"
+              />
+              <StatCard 
+                icon={<ShieldCheck className="h-5 w-5 text-navy-600" />}
+                label="Produk Terbanyak" 
+                value={leadsStats.topProduct || "-"} 
+                isText
+              />
+              <StatCard 
+                icon={<MapPin className="h-5 w-5 text-red-600" />}
+                label="Kota Terbanyak" 
+                value={leadsStats.topCity || "-"} 
+                isText
+              />
+            </div>
+            <div className="grid gap-4 border-t border-navy-100 p-5 sm:grid-cols-2 lg:grid-cols-4">
+              <StatCard 
+                icon={<Store className="h-5 w-5 text-purple-600" />}
+                label="Jumlah Reseller" 
+                value={leadsStats.resellerCount} 
+                color="purple"
+              />
+              <StatCard 
+                icon={<Store className="h-5 w-5 text-orange-600" />}
+                label="Toko Pancing" 
+                value={leadsStats.tokoPancingCount} 
+                color="orange"
+              />
+              <StatCard 
+                icon={<Fish className="h-5 w-5 text-gold-600" />}
+                label="Pemancing Ikan Mas" 
+                value={leadsStats.pemancingMasCount} 
+                color="gold"
+              />
+              <StatCard 
+                icon={<Fish className="h-5 w-5 text-slate-600" />}
+                label="Pemancing Lele" 
+                value={leadsStats.pemancingLeleCount} 
+                color="slate"
+              />
+            </div>
+          </div>
+        )}
 
         <div className="panel mt-6 overflow-hidden">
           <div className="flex items-center justify-between border-b border-navy-100 p-5">
