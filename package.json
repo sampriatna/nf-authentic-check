@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "setup-admin": "npx ts-node scripts/setup-admin.ts"
+    "setup-admin": "node scripts/setup-admin.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.43.4",

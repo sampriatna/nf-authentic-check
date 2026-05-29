@@ -5,7 +5,7 @@
  * Jalankan dengan: npm run setup-admin
  */
 
-import { createAdminUser } from "./lib/admin-setup.js";
+import { createAdminUser } from "../lib/admin-setup";
 import readline from "readline";
 
 const rl = readline.createInterface({
