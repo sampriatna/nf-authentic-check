@@ -4,6 +4,7 @@ import { useFormState } from "react-dom";
 import { AlertTriangle, BadgeCheck, MessageCircle, Search, ShieldCheck } from "lucide-react";
 import { checkProductAction } from "@/app/actions";
 import { formatDate, formatDateTime } from "@/lib/format";
+import { VerificationResultCard } from "./VerificationResultCard";
 
 const adminWhatsapp = process.env.NEXT_PUBLIC_ADMIN_WHATSAPP || "6282285333666";
 
@@ -139,12 +140,7 @@ export function PublicChecker() {
             ) : null}
           </div>
         ) : (
-          <div className="panel p-5 md:p-6">
-            <h2 className="text-lg font-black text-navy-900">Status autentikasi akan tampil di sini</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600">
-              Untuk QR authenticator baru, scan QR pada label atau buka link dengan format /cek/KODE.
-            </p>
-          </div>
+          <VerificationResultCard />
         )}
       </section>
     </main>
