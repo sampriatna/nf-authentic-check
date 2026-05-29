@@ -250,3 +250,57 @@ export async function saveCustomerLeadAction(
     };
   }
 }
+
+export async function deleteSuspiciousProductAction(_prevState: FormState, formData: FormData): Promise<FormState> {
+  const productId = String(formData.get("product_id") || "").trim();
+
+  if (!productId) {
+    return {
+      ok: false,
+      message: "Product ID tidak valid"
+    };
+  }
+
+  try {
+    const { deleteProduct } = await import("@/lib/products");
+    await deleteProduct(productId);
+    revalidatePath("/admin");
+
+    return {
+      ok: true,
+      message: "Kode mencurigakan berhasil dihapus"
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "Gagal menghapus kode"
+    };
+  }
+}
+
+export async function blockSuspiciousProductAction(_prevState: FormState, formData: FormData): Promise<FormState> {
+  const productId = String(formData.get("product_id") || "").trim();
+
+  if (!productId) {
+    return {
+      ok: false,
+      message: "Product ID tidak valid"
+    };
+  }
+
+  try {
+    const { blockProduct } = await import("@/lib/products");
+    await blockProduct(productId);
+    revalidatePath("/admin");
+
+    return {
+      ok: true,
+      message: "Kode mencurigakan berhasil diblock"
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : "Gagal memblock kode"
+    };
+  }
+}

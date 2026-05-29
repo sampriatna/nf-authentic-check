@@ -242,3 +242,15 @@ export async function getLeadsDashboardStats(): Promise<LeadsDashboardStats> {
     pemancingLeleCount
   };
 }
+
+export async function deleteProduct(productId: string) {
+  const supabase = getSupabaseAdmin();
+  const { error } = await supabase.from("products").delete().eq("id", productId);
+  if (error) throw error;
+}
+
+export async function blockProduct(productId: string) {
+  const supabase = getSupabaseAdmin();
+  const { error } = await supabase.from("products").update({ status: "blocked" }).eq("id", productId);
+  if (error) throw error;
+}
