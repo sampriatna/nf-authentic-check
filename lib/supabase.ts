@@ -2,7 +2,8 @@ import { createClient } from "@supabase/supabase-js";
 
 export function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  // Try SUPABASE_SERVICE_ROLE_KEY first, then fall back to SUPABASE_JWT_SECRET
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_JWT_SECRET;
 
   console.log("[v0] DEBUG Supabase config:", {
     url_exists: !!url,
@@ -12,7 +13,7 @@ export function getSupabaseAdmin() {
   });
 
   if (!url || !serviceRoleKey) {
-    throw new Error("Supabase belum dikonfigurasi. Isi NEXT_PUBLIC_SUPABASE_URL dan SUPABASE_SERVICE_ROLE_KEY.");
+    throw new Error("Supabase belum dikonfigurasi. Isi NEXT_PUBLIC_SUPABASE_URL dan SUPABASE_SERVICE_ROLE_KEY atau SUPABASE_JWT_SECRET.");
   }
 
   return createClient(url, serviceRoleKey, {
