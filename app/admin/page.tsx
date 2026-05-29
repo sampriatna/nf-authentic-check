@@ -172,7 +172,7 @@ export default async function AdminPage() {
               </thead>
               <tbody>
                 {suspicious.length ? (
-                  suspicious.map((product) => (
+                  suspicious.map((product: any) => (
                     <tr className="border-t border-navy-100" key={product.id}>
                       <td className="px-5 py-4 font-bold text-navy-900">{product.serial_number}</td>
                       <td className="px-5 py-4">{product.product_name}</td>
@@ -221,7 +221,7 @@ export default async function AdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {products.map((product) => (
+                {products.map((product: any) => (
                   <tr className="border-t border-navy-100" key={product.id}>
                     <td className="px-5 py-4 font-bold text-navy-900">{product.serial_number}</td>
                     <td className="px-5 py-4">{product.pin_code}</td>

@@ -4,7 +4,8 @@ const cookieName = "nf_admin_session";
 
 // Admin password - for production use environment variable ADMIN_PASSWORD
 function getAdminPassword() {
-  return process.env.ADMIN_PASSWORD || "@Tukgumer123";
+  const password = process.env.ADMIN_PASSWORD || "@Tukgumer123";
+  return password.trim();
 }
 
 export function isAdminLoggedIn() {
@@ -12,7 +13,12 @@ export function isAdminLoggedIn() {
 }
 
 export function loginAdmin(password: string) {
-  if (password !== getAdminPassword()) return false;
+  const inputPassword = password.trim();
+  const correctPassword = getAdminPassword();
+  console.log("[v0] Login - Input length:", inputPassword.length, "Expected length:", correctPassword.length);
+  console.log("[v0] Match result:", inputPassword === correctPassword);
+  
+  if (inputPassword !== correctPassword) return false;
 
   cookies().set(cookieName, "active", {
     httpOnly: true,
