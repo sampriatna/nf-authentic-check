@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Download, Eye, Fish, LogOut, MapPin, Trash2, ShieldAlert, ShieldCheck, Store, TrendingUp, Users, Lock } from "lucide-react";
-import { logoutAction, blockSuspiciousProductAction, deleteSuspiciousProductAction } from "@/app/actions";
+import { Download, Eye, Fish, LogOut, MapPin, ShieldAlert, ShieldCheck, Store, TrendingUp, Users } from "lucide-react";
+import { logoutAction } from "@/app/actions";
 import { AddProductForm, ImportCsvForm } from "@/components/AdminForms";
+import { SuspiciousProductActions } from "@/components/SuspiciousProductActions";
 import { isAdminLoggedIn } from "@/lib/auth";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { getDashboardStats, getLeadsDashboardStats } from "@/lib/products";
@@ -176,32 +177,7 @@ export default async function AdminPage() {
                       <td className="px-5 py-4">{formatDateTime(product.last_scan_at)}</td>
                       <td className="px-5 py-4">{product.last_scan_ip || "-"}</td>
                       <td className="px-5 py-4">
-                        <div className="flex gap-2">
-                          <form action={blockSuspiciousProductAction} onSubmit={(e) => {
-                            if (!confirm("Block kode ini? Kode tidak akan bisa dicek lagi.")) e.preventDefault();
-                          }}>
-                            <input type="hidden" name="product_id" value={product.id} />
-                            <button 
-                              type="submit" 
-                              className="inline-flex items-center gap-1 rounded bg-orange-100 px-2.5 py-1.5 text-xs font-bold text-orange-700 hover:bg-orange-200"
-                            >
-                              <Lock className="h-3.5 w-3.5" />
-                              Block
-                            </button>
-                          </form>
-                          <form action={deleteSuspiciousProductAction} onSubmit={(e) => {
-                            if (!confirm("Hapus kode ini? Tindakan tidak dapat dibatalkan.")) e.preventDefault();
-                          }}>
-                            <input type="hidden" name="product_id" value={product.id} />
-                            <button 
-                              type="submit" 
-                              className="inline-flex items-center gap-1 rounded bg-red-100 px-2.5 py-1.5 text-xs font-bold text-red-700 hover:bg-red-200"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                              Hapus
-                            </button>
-                          </form>
-                        </div>
+                        <SuspiciousProductActions productId={product.id} />
                       </td>
                     </tr>
                   ))
