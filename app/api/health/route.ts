@@ -33,10 +33,11 @@ export async function GET() {
       supabase.from("products").select("id").limit(1),
       supabase.from("verification_logs").select("id").limit(1),
       supabase.from("authenticator_codes").select("id").limit(1),
-      supabase.from("authenticator_logs").select("id").limit(1)
+      supabase.from("authenticator_logs").select("id").limit(1),
+      supabase.from("customer_leads").select("id").limit(1)
     ]);
 
-    const tableNames = ["products", "verification_logs", "authenticator_codes", "authenticator_logs"];
+    const tableNames = ["products", "verification_logs", "authenticator_codes", "authenticator_logs", "customer_leads"];
     const tables = Object.fromEntries(
       checks.map((check, index) => [
         tableNames[index],
@@ -46,18 +47,19 @@ export async function GET() {
         }
       ])
     );
-    const failedTables = Object.entries(tables)
-      .filter(([, value]) => !value.ok)
-      .map(([name]) => name);
+    
+    // Core tables are required
+    const coreTables = ["products", "authenticator_codes", "customer_leads"];
+    const failedCoreTables = coreTables.filter((name) => tables[name] && !tables[name].ok);
 
     return NextResponse.json(
       {
-        ok: failedTables.length === 0,
-        message: failedTables.length === 0 ? "Setup aplikasi terlihat siap." : "Ada tabel Supabase yang belum siap.",
+        ok: failedCoreTables.length === 0,
+        message: failedCoreTables.length === 0 ? "Setup aplikasi siap digunakan." : `Tabel yang hilang: ${failedCoreTables.join(", ")}`,
         env,
         tables
       },
-      { status: failedTables.length === 0 ? 200 : 500 }
+      { status: failedCoreTables.length === 0 ? 200 : 500 }
     );
   } catch (error) {
     return NextResponse.json(
