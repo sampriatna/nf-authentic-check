@@ -18,8 +18,8 @@ export function PublicChecker() {
       <section className="bg-gradient-to-br from-navy-900 via-navy-800 to-navy-900 text-white">
         <div className="mx-auto grid min-h-[48vh] max-w-6xl gap-8 px-5 py-12 md:grid-cols-[1.1fr_0.9fr] md:items-center md:px-8">
           <div>
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-gold-400/40 bg-navy-800/60 px-3 py-1.5 text-xs font-medium text-gold-300">
-              <ShieldCheck className="h-3.5 w-3.5" />
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border-2 border-gold-400 bg-navy-800/70 px-4 py-2 text-xs font-semibold text-gold-300">
+              <ShieldCheck className="h-4 w-4" />
               cek.nusafishing.com
             </div>
             <h1 className="max-w-3xl text-4xl font-black leading-tight md:text-5xl lg:text-6xl">
