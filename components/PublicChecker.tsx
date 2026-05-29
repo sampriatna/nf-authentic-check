@@ -5,6 +5,7 @@ import { AlertTriangle, BadgeCheck, MessageCircle, Search, ShieldCheck } from "l
 import { checkProductAction } from "@/app/actions";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { VerificationResultCard } from "./VerificationResultCard";
+import { EbookClaimForm } from "./EbookClaimForm";
 
 const adminWhatsapp = process.env.NEXT_PUBLIC_ADMIN_WHATSAPP || "6282285333666";
 
@@ -136,6 +137,16 @@ export function PublicChecker() {
                 <Detail label="Jumlah Scan" value={`${state.product.scan_count} kali`} />
                 <Detail label="Scan Terakhir" value={formatDateTime(state.product.last_scan_at)} />
                 <Detail label="Catatan" value={state.product.note || "-"} />
+              </div>
+            ) : null}
+
+            {isSuccess && !isRepeat && state.product ? (
+              <div className="border-t border-navy-100 p-6 md:p-8">
+                <EbookClaimForm
+                  productCode={state.product.serial_number}
+                  productName={state.product.product_name}
+                  batchCode={state.product.batch_code}
+                />
               </div>
             ) : null}
           </div>
