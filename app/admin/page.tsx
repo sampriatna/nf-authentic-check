@@ -9,7 +9,9 @@ import { formatDate, formatDateTime } from "@/lib/format";
 import { getDashboardStats, getLeadsDashboardStats } from "@/lib/products";
 
 export default async function AdminPage() {
-  if (!isAdminLoggedIn()) redirect("/admin/login");
+  if (!isAdminLoggedIn()) {
+    redirect("/admin/login");
+  }
 
   let dashboardData: any = null;
   let leadsStats: any = null;

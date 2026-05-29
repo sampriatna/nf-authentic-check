@@ -11,7 +11,14 @@ function getAdminPassword() {
 }
 
 export function isAdminLoggedIn() {
-  return cookies().get(cookieName)?.value === "active";
+  try {
+    const cookieStore = cookies();
+    return cookieStore.get(cookieName)?.value === "active";
+  } catch (err) {
+    // If cookies are not available (e.g., in some RSC contexts), return false
+    console.log("[v0] Auth: Cookies not available, returning false");
+    return false;
+  }
 }
 
 export function loginAdmin(password: string) {
@@ -20,17 +27,28 @@ export function loginAdmin(password: string) {
   
   if (inputPassword !== correctPassword) return false;
 
-  cookies().set(cookieName, "active", {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: 60 * 60 * 8
-  });
+  try {
+    const cookieStore = cookies();
+    cookieStore.set(cookieName, "active", {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+      maxAge: 60 * 60 * 8
+    });
+  } catch (err) {
+    console.error("[v0] Auth: Failed to set cookie", err);
+    return false;
+  }
 
   return true;
 }
 
 export function logoutAdmin() {
-  cookies().delete(cookieName);
+  try {
+    const cookieStore = cookies();
+    cookieStore.delete(cookieName);
+  } catch (err) {
+    console.error("[v0] Auth: Failed to delete cookie", err);
+  }
 }
