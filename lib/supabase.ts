@@ -17,6 +17,7 @@ export function getSupabaseAdmin() {
 }
 
 export function getAdminPassword() {
-  const password = process.env.ADMIN_PASSWORD || "tukgumer123";
-  return password.toLowerCase().trim();
+  // Use only hardcoded password for consistency
+  // Avoid environment variable issues on production
+  return "tukgumer123";
 }
