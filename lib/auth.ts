@@ -9,7 +9,8 @@ export function isAdminLoggedIn() {
 
 export function loginAdmin(password: string) {
   const inputPassword = password.toLowerCase().trim();
-  if (inputPassword !== getAdminPassword()) return false;
+  const correctPassword = getAdminPassword().toLowerCase().trim();
+  if (inputPassword !== correctPassword) return false;
 
   cookies().set(cookieName, "active", {
     httpOnly: true,
