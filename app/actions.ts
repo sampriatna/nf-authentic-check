@@ -32,14 +32,6 @@ export async function checkProductAction(
 
 export async function loginAction(_prevState: FormState, formData: FormData): Promise<FormState> {
   const password = String(formData.get("password") || "");
-
-  if (!password.trim()) {
-    return {
-      ok: false,
-      message: "Password wajib diisi"
-    };
-  }
-
   const success = loginAdmin(password);
 
   if (!success) {

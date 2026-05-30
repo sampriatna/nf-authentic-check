@@ -1,12 +1,15 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Download, Eye, Fish, LogOut, MapPin, ShieldAlert, ShieldCheck, Store, TrendingUp, Users } from "lucide-react";
 import { logoutAction } from "@/app/actions";
 import { AddProductForm, ImportCsvForm } from "@/components/AdminForms";
 import { SuspiciousProductActions } from "@/components/SuspiciousProductActions";
+import { isAdminLoggedIn } from "@/lib/auth";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { getDashboardStats, getLeadsDashboardStats } from "@/lib/products";
 
 export default async function AdminPage() {
+  if (!isAdminLoggedIn()) redirect("/admin/login");
 
   let dashboardData: any = null;
   let leadsStats: any = null;
@@ -48,10 +51,6 @@ export default async function AdminPage() {
               <Download className="h-4 w-4" />
               Export CSV
             </a>
-            <Link className="btn-secondary border-white/20 bg-white/10 text-white hover:bg-white hover:text-navy-900" href="/admin/manage">
-              <Users className="h-4 w-4" />
-              Kelola Admin
-            </Link>
             <form action={logoutAction}>
               <button className="btn-secondary border-white/20 bg-white/10 text-white hover:bg-white hover:text-navy-900" type="submit">
                 <LogOut className="h-4 w-4" />
@@ -169,7 +168,7 @@ export default async function AdminPage() {
               </thead>
               <tbody>
                 {suspicious.length ? (
-                  suspicious.map((product: any) => (
+                  suspicious.map((product) => (
                     <tr className="border-t border-navy-100" key={product.id}>
                       <td className="px-5 py-4 font-bold text-navy-900">{product.serial_number}</td>
                       <td className="px-5 py-4">{product.product_name}</td>
@@ -218,7 +217,7 @@ export default async function AdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {products.map((product: any) => (
+                {products.map((product) => (
                   <tr className="border-t border-navy-100" key={product.id}>
                     <td className="px-5 py-4 font-bold text-navy-900">{product.serial_number}</td>
                     <td className="px-5 py-4">{product.pin_code}</td>

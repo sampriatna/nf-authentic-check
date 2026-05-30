@@ -4,8 +4,6 @@ import { useFormState } from "react-dom";
 import { AlertTriangle, BadgeCheck, MessageCircle, Search, ShieldCheck } from "lucide-react";
 import { checkProductAction } from "@/app/actions";
 import { formatDate, formatDateTime } from "@/lib/format";
-import { VerificationResultCard } from "./VerificationResultCard";
-import { EbookClaimForm } from "./EbookClaimForm";
 
 const adminWhatsapp = process.env.NEXT_PUBLIC_ADMIN_WHATSAPP || "6282285333666";
 
@@ -20,23 +18,26 @@ export function PublicChecker() {
       <section className="bg-gradient-to-br from-navy-900 via-navy-800 to-navy-900 text-white">
         <div className="mx-auto grid min-h-[48vh] max-w-6xl gap-8 px-5 py-12 md:grid-cols-[1.1fr_0.9fr] md:items-center md:px-8">
           <div>
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border-2 border-gold-400 bg-navy-800/70 px-4 py-2 text-xs font-semibold text-gold-300">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-gold-400/30 bg-gold-400/5 px-3 py-1.5 text-sm text-gold-300">
               <ShieldCheck className="h-4 w-4" />
-              cek.nusafishing.com
+              Portal Verifikasi Nusa Fishing
             </div>
             <h1 className="max-w-3xl text-4xl font-black leading-tight md:text-5xl lg:text-6xl">
-              Portal cek keaslian produk Nusa Fishing.
+              Verifikasi Keaslian Produk Anda
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-7 text-navy-100">
-              Gunakan halaman ini khusus untuk verifikasi produk. Website utama Nusa Fishing tetap terpisah dari portal cek keaslian.
+              Portal khusus untuk memastikan produk Nusa Fishing Anda adalah asli. Gunakan Serial Number dan PIN 
+              yang tertera pada kemasan untuk verifikasi instant.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <a 
-                className="btn-secondary border-white/20 bg-white/10 text-white hover:bg-white hover:text-navy-900" 
-                href="/admin/authenticator"
+                className="btn-primary bg-gold-500 text-navy-900 hover:bg-gold-600" 
+                href="https://affiliate.nusafishing.com/join" 
+                rel="noreferrer" 
+                target="_blank"
               >
                 <ShieldCheck className="h-4 w-4" />
-                Admin QR
+                Klaim Gratis
               </a>
               <a 
                 className="btn-secondary border-white/20 bg-white/10 text-white hover:bg-white hover:text-navy-900" 
@@ -51,8 +52,8 @@ export function PublicChecker() {
 
           <form action={formAction} className="panel p-6 text-navy-900 md:p-8">
             <div className="mb-6">
-              <h2 className="text-lg font-black">Cek Serial + PIN</h2>
-              <p className="mt-2 text-xs font-medium text-slate-500">Untuk label lama yang memakai serial number dan PIN.</p>
+              <h2 className="text-lg font-black">Verifikasi Produk</h2>
+              <p className="mt-2 text-xs font-medium uppercase tracking-wide text-slate-500">Masukkan data dari kemasan produk</p>
             </div>
 
             <div className="space-y-4">
@@ -71,15 +72,15 @@ export function PublicChecker() {
                 <input 
                   className="field mt-2" 
                   name="pin_code" 
-                  placeholder="Masukkan PIN" 
+                  placeholder="Masukkan PIN (6 digit)" 
                   type="password"
                   required
                 />
               </label>
 
-              <button className="btn-primary w-full bg-navy-900 hover:bg-navy-800" type="submit">
+              <button className="btn-primary w-full bg-emerald-600 hover:bg-emerald-700" type="submit">
                 <Search className="h-4 w-4" />
-                Cek Keaslian
+                Verifikasi Sekarang
               </button>
             </div>
           </form>
@@ -89,7 +90,7 @@ export function PublicChecker() {
       <section className="mx-auto max-w-6xl px-5 py-10 md:px-8">
         {state ? (
           <div
-            className={`panel overflow-hidden border-l-8 ${
+            className={`panel overflow-hidden border-l-4 ${
               isSuccess ? (isRepeat ? "border-l-gold-500" : "border-l-emerald-500") : "border-l-red-500"
             }`}
           >
@@ -105,24 +106,26 @@ export function PublicChecker() {
                 </div>
                 {isRepeat ? (
                   <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
-                    Kode ini valid, tetapi pernah dicek sebelumnya. Cocokkan kondisi kemasan dan hubungi admin bila Anda tidak merasa pernah melakukan scan.
+                    Produk ini telah diverifikasi sebelumnya. Jika Anda belum pernah melakukan verifikasi, 
+                    mohon hubungi admin untuk memastikan keaslian produk Anda.
                   </p>
                 ) : null}
                 {!isSuccess ? (
                   <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
-                    Serial number atau PIN tidak cocok dengan database NF Authentic Check.
+                    Serial Number atau PIN tidak sesuai dengan database kami. Mohon periksa kembali data 
+                    pada kemasan produk atau hubungi admin kami untuk bantuan lebih lanjut.
                   </p>
                 ) : null}
               </div>
 
               <a
-                className="btn-secondary"
+                className="btn-secondary whitespace-nowrap"
                 href={`https://wa.me/${adminWhatsapp}?text=${whatsappText}`}
                 rel="noreferrer"
                 target="_blank"
               >
                 <MessageCircle className="h-4 w-4" />
-                WhatsApp Admin
+                Hubungi Admin
               </a>
             </div>
 
@@ -139,19 +142,22 @@ export function PublicChecker() {
                 <Detail label="Catatan" value={state.product.note || "-"} />
               </div>
             ) : null}
-
-            {isSuccess && !isRepeat && state.product ? (
-              <div className="border-t border-navy-100 p-6 md:p-8">
-                <EbookClaimForm
-                  productCode={state.product.serial_number}
-                  productName={state.product.product_name}
-                  batchCode={state.product.batch_code}
-                />
-              </div>
-            ) : null}
           </div>
         ) : (
-          <VerificationResultCard />
+          <div className="panel border-t-4 border-t-blue-300 p-6 md:p-8">
+            <div className="flex items-start gap-4">
+              <div className="rounded-full bg-blue-100 p-3">
+                <Search className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <h2 className="text-lg font-black text-navy-900">Siap untuk Verifikasi?</h2>
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+                  Masukkan Serial Number dan PIN dari kemasan produk Anda di atas untuk memverifikasi keaslian. 
+                  Hasil verifikasi akan ditampilkan di sini beserta detail produk lengkap.
+                </p>
+              </div>
+            </div>
+          </div>
         )}
       </section>
     </main>
