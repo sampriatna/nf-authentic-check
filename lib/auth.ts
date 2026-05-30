@@ -25,15 +25,6 @@ export function loginAdmin(password: string) {
   const inputPassword = password.toLowerCase().trim();
   const correctPassword = getAdminPassword();
   
-  console.log("[v0] LOGIN ADMIN - Compare:", {
-    input: inputPassword,
-    correct: correctPassword,
-    input_length: inputPassword.length,
-    correct_length: correctPassword.length,
-    match: inputPassword === correctPassword,
-    env_set: !!process.env.ADMIN_PASSWORD,
-  });
-  
   if (inputPassword !== correctPassword) return false;
 
   try {
