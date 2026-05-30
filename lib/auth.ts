@@ -25,6 +25,13 @@ export function loginAdmin(password: string) {
   const inputPassword = password.toLowerCase().trim();
   const correctPassword = getAdminPassword();
   
+  console.log("[v0] LOGIN DEBUG:", {
+    input_length: inputPassword.length,
+    correct_length: correctPassword.length,
+    env_var_set: !!process.env.ADMIN_PASSWORD,
+    env_value: process.env.ADMIN_PASSWORD ? `${process.env.ADMIN_PASSWORD.substring(0, 3)}***` : "NOT SET",
+  });
+  
   if (inputPassword !== correctPassword) return false;
 
   try {
