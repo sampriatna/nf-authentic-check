@@ -16,7 +16,6 @@ export function isAdminLoggedIn() {
     return cookieStore.get(cookieName)?.value === "active";
   } catch (err) {
     // If cookies are not available (e.g., in some RSC contexts), return false
-    console.log("[v0] Auth: Cookies not available, returning false");
     return false;
   }
 }
