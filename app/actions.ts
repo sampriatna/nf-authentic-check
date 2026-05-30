@@ -33,6 +33,13 @@ export async function checkProductAction(
 export async function loginAction(_prevState: FormState, formData: FormData): Promise<FormState> {
   const password = String(formData.get("password") || "");
 
+  console.log("[v0] LOGIN ACTION - Received:", {
+    password_length: password.length,
+    password_trimmed_length: password.trim().length,
+    password_first_5: password.substring(0, 5),
+    raw_password: password
+  });
+
   if (!password.trim()) {
     return {
       ok: false,
@@ -41,6 +48,8 @@ export async function loginAction(_prevState: FormState, formData: FormData): Pr
   }
 
   const success = loginAdmin(password);
+
+  console.log("[v0] LOGIN ACTION - Result:", { success });
 
   if (!success) {
     return {
