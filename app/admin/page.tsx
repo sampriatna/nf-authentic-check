@@ -7,6 +7,7 @@ import { SuspiciousProductActions } from "@/components/SuspiciousProductActions"
 import { isAdminLoggedIn } from "@/lib/auth";
 import { formatDate, formatDateTime } from "@/lib/format";
 import { getDashboardStats, getLeadsDashboardStats } from "@/lib/products";
+import { getSupabaseAdmin } from "@/lib/supabase";
 import type { Product } from "@/lib/types";
 
 export default async function AdminPage() {
@@ -14,17 +15,27 @@ export default async function AdminPage() {
 
   let dashboardData: any = null;
   let leadsStats: any = null;
+  let exactTotalProducts: number | null = null;
   let error: string | null = null;
 
   try {
     dashboardData = await getDashboardStats();
     leadsStats = await getLeadsDashboardStats();
+
+    const supabase = getSupabaseAdmin();
+    const { count, error: countError } = await supabase
+      .from("products")
+      .select("id", { count: "exact", head: true });
+
+    if (countError) throw countError;
+    exactTotalProducts = count ?? 0;
   } catch (err) {
     error = err instanceof Error ? err.message : "Error loading dashboard data";
     console.error("[v0] Dashboard error:", error);
   }
 
   const { products = [], suspicious = [], suspiciousCount = 0, totalProducts = 0, totalScans = 0 } = dashboardData || {};
+  const displayedTotalProducts = exactTotalProducts ?? totalProducts;
 
   return (
     <main className="min-h-screen">
@@ -72,7 +83,7 @@ export default async function AdminPage() {
         )}
 
         <div className="grid gap-4 md:grid-cols-3">
-          <Stat label="Total Serial" value={totalProducts} />
+          <Stat label="Total Serial" value={displayedTotalProducts} />
           <Stat label="Total Scan" value={totalScans} />
           <Stat label="Kode Mencurigakan" value={suspiciousCount} />
         </div>
