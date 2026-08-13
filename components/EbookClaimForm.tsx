@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { useTransition } from "react";
+import { useFormState } from "react-dom";
 import { Book, ExternalLink, Loader2, Users } from "lucide-react";
 import { saveCustomerLeadAction, FormState } from "@/app/actions";
 
@@ -24,7 +25,13 @@ const initialState: FormState = {
 };
 
 export function EbookClaimForm({ productCode, productName, batchCode }: EbookClaimFormProps) {
-  const [state, formAction, pending] = useActionState(saveCustomerLeadAction, initialState);
+  const [state, dispatch] = useFormState(saveCustomerLeadAction, initialState);
+  const [pending, startTransition] = useTransition();
+  const formAction = (formData: FormData) => {
+    startTransition(() => {
+      dispatch(formData);
+    });
+  };
 
   if (state.ok) {
     return (
