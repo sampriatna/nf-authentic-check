@@ -123,13 +123,25 @@ export async function importProducts(inputs: ProductInput[]) {
 
 export async function getProducts() {
   const supabase = getSupabaseAdmin();
-  const { data, error } = await supabase
-    .from("products")
-    .select("*")
-    .order("created_at", { ascending: false });
+  const pageSize = 1000;
+  const products: Product[] = [];
 
-  if (error) throw error;
-  return (data || []) as Product[];
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await supabase
+      .from("products")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .range(from, from + pageSize - 1);
+
+    if (error) throw error;
+
+    const page = (data || []) as Product[];
+    products.push(...page);
+
+    if (page.length < pageSize) break;
+  }
+
+  return products;
 }
 
 export async function getDashboardStats() {
