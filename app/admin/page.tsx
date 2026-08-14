@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Download, Eye, Fish, LogOut, MapPin, ShieldAlert, ShieldCheck, Store, TrendingUp, Users } from "lucide-react";
+import { Download, Eye, Fish, LogOut, MapPin, Search, ShieldAlert, ShieldCheck, Store, TrendingUp, Users } from "lucide-react";
 import { logoutAction } from "@/app/actions";
 import { AddProductForm, ImportCsvForm } from "@/components/AdminForms";
 import { SuspiciousProductActions } from "@/components/SuspiciousProductActions";
@@ -10,7 +10,14 @@ import { getDashboardStats, getLeadsDashboardStats } from "@/lib/products";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import type { Product } from "@/lib/types";
 
-export default async function AdminPage() {
+type AdminPageProps = {
+  searchParams?: {
+    q?: string;
+    product?: string;
+  };
+};
+
+export default async function AdminPage({ searchParams }: AdminPageProps) {
   if (!isAdminLoggedIn()) redirect("/admin/login");
 
   let dashboardData: any = null;
@@ -36,6 +43,27 @@ export default async function AdminPage() {
 
   const { products = [], suspicious = [], suspiciousCount = 0, totalProducts = 0, totalScans = 0 } = dashboardData || {};
   const displayedTotalProducts = exactTotalProducts ?? totalProducts;
+  const query = (searchParams?.q || "").trim();
+  const selectedProduct = (searchParams?.product || "").trim();
+  const normalizedQuery = query.toLowerCase();
+  const productOptions = Array.from(
+    new Set(
+      (products as Product[])
+        .map((product) => product.product_name?.trim())
+        .filter((name): name is string => Boolean(name))
+    )
+  ).sort((a, b) => a.localeCompare(b, "id"));
+  const filteredProducts = (products as Product[]).filter((product) => {
+    const matchesProduct = !selectedProduct || product.product_name === selectedProduct;
+    const matchesQuery =
+      !normalizedQuery ||
+      [product.serial_number, product.pin_code, product.product_name, product.batch_code]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase().includes(normalizedQuery));
+
+    return matchesProduct && matchesQuery;
+  });
+  const hasSerialFilter = Boolean(query || selectedProduct);
 
   return (
     <main className="min-h-screen">
@@ -209,10 +237,59 @@ export default async function AdminPage() {
           <div className="flex items-center justify-between border-b border-navy-100 p-5">
             <div>
               <h2 className="text-lg font-black text-navy-900">Daftar Serial</h2>
-              <p className="text-sm text-slate-500">Pantau status dan jumlah scan tiap produk.</p>
+              <p className="text-sm text-slate-500">Cari dan filter serial tanpa perlu menelusuri seluruh daftar.</p>
             </div>
             <Eye className="h-6 w-6 text-navy-700" />
           </div>
+
+          <form className="grid gap-3 border-b border-navy-100 bg-navy-50/50 p-5 md:grid-cols-[minmax(0,1.6fr)_minmax(220px,0.8fr)_auto] md:items-end" method="get">
+            <label className="block">
+              <span className="label">Pencarian</span>
+              <div className="relative mt-2">
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input
+                  className="field w-full pl-10"
+                  defaultValue={query}
+                  name="q"
+                  placeholder="Cari SN, PIN, produk, atau batch..."
+                  type="search"
+                />
+              </div>
+            </label>
+
+            <label className="block">
+              <span className="label">Produk</span>
+              <select className="field mt-2 w-full" defaultValue={selectedProduct} name="product">
+                <option value="">Semua Produk</option>
+                {productOptions.map((productName) => (
+                  <option key={productName} value={productName}>
+                    {productName}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <div className="flex gap-2">
+              <button className="btn-primary flex-1 md:flex-none" type="submit">
+                <Search className="h-4 w-4" />
+                Cari
+              </button>
+              {hasSerialFilter ? (
+                <Link className="btn-secondary flex-1 md:flex-none" href="/admin">
+                  Reset
+                </Link>
+              ) : null}
+            </div>
+          </form>
+
+          <div className="flex flex-col gap-1 border-b border-navy-100 px-5 py-3 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+            <p>
+              Menampilkan <strong className="text-navy-900">{filteredProducts.length.toLocaleString("id-ID")}</strong> dari{" "}
+              <strong className="text-navy-900">{products.length.toLocaleString("id-ID")}</strong> serial.
+            </p>
+            {hasSerialFilter ? <p className="text-xs">Filter aktif</p> : null}
+          </div>
+
           <div className="overflow-x-auto">
             <table className="w-full min-w-[980px] text-left text-sm">
               <thead className="bg-navy-50 text-xs uppercase text-slate-500">
@@ -229,7 +306,7 @@ export default async function AdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {products.map((product: Product) => (
+                {filteredProducts.map((product: Product) => (
                   <tr className="border-t border-navy-100" key={product.id}>
                     <td className="px-5 py-4 font-bold text-navy-900">{product.serial_number}</td>
                     <td className="px-5 py-4">{product.pin_code}</td>
@@ -242,10 +319,10 @@ export default async function AdminPage() {
                     <td className="px-5 py-4">{formatDateTime(product.last_scan_at)}</td>
                   </tr>
                 ))}
-                {!products.length ? (
+                {!filteredProducts.length ? (
                   <tr>
-                    <td className="px-5 py-5 text-slate-500" colSpan={9}>
-                      Belum ada data produk.
+                    <td className="px-5 py-8 text-center text-slate-500" colSpan={9}>
+                      {products.length ? "Tidak ada serial yang cocok dengan pencarian atau filter." : "Belum ada data produk."}
                     </td>
                   </tr>
                 ) : null}
