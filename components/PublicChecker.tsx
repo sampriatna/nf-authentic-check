@@ -3,6 +3,7 @@
 import { useFormState } from "react-dom";
 import { AlertTriangle, BadgeCheck, MessageCircle, Search, ShieldCheck } from "lucide-react";
 import { checkProductAction } from "@/app/actions";
+import { SubmitButton } from "@/components/SubmitButton";
 import { formatDate, formatDateTime } from "@/lib/format";
 
 const adminWhatsapp = process.env.NEXT_PUBLIC_ADMIN_WHATSAPP || "6282285333666";
@@ -78,10 +79,13 @@ export function PublicChecker() {
                 />
               </label>
 
-              <button className="btn-primary w-full bg-emerald-600 hover:bg-emerald-700" type="submit">
-                <Search className="h-4 w-4" />
+              <SubmitButton
+                className="btn-primary w-full bg-emerald-600 hover:bg-emerald-700"
+                pendingLabel="Sedang Memverifikasi..."
+              >
+                <Search aria-hidden="true" className="h-4 w-4" />
                 Verifikasi Sekarang
-              </button>
+              </SubmitButton>
             </div>
           </form>
         </div>

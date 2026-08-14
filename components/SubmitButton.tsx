@@ -7,15 +7,33 @@ import { Loader2 } from "lucide-react";
 type SubmitButtonProps = {
   children: ReactNode;
   className?: string;
+  pendingLabel?: string;
 };
 
-export function SubmitButton({ children, className = "btn-primary" }: SubmitButtonProps) {
+export function SubmitButton({
+  children,
+  className = "btn-primary",
+  pendingLabel,
+}: SubmitButtonProps) {
   const { pending } = useFormStatus();
 
   return (
-    <button className={className} disabled={pending} type="submit">
-      {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-      {children}
+    <button
+      aria-busy={pending}
+      className={`${className} disabled:cursor-wait disabled:opacity-80`}
+      disabled={pending}
+      type="submit"
+    >
+      {pending ? (
+        <>
+          <Loader2 aria-hidden="true" className="h-4 w-4 animate-spin" />
+          <span aria-live="polite" role="status">
+            {pendingLabel ?? children}
+          </span>
+        </>
+      ) : (
+        children
+      )}
     </button>
   );
 }
